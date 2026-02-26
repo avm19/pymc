@@ -808,7 +808,7 @@ class ZarrTrace:
             dtype="int",
             fill_value=0,
             compressor=self.compressor,
-        )
+        ).attrs.update({"_ARRAY_DIMENSIONS": []})
         state.array(
             name="draws",
             data=draws,
@@ -816,21 +816,21 @@ class ZarrTrace:
             dtype="int",
             fill_value=0,
             compressor=self.compressor,
-        )
+        ).attrs.update({"_ARRAY_DIMENSIONS": []})
         state.array(
             name="sampling_time",
             data=0.0,
             dtype="float",
             fill_value=0.0,
             compressor=self.compressor,
-        )
+        ).attrs.update({"_ARRAY_DIMENSIONS": []})
         state.array(
             name="sampling_start_time",
             data=0.0,
             dtype="float",
             fill_value=0.0,
             compressor=self.compressor,
-        )
+        ).attrs.update({"_ARRAY_DIMENSIONS": []})
 
         chain = state.array(
             name="chain",
@@ -845,7 +845,7 @@ class ZarrTrace:
             dtype="object",
             object_codec=numcodecs.Pickle(),
             shape=(0,),
-        )
+        ).attrs.update({"_ARRAY_DIMENSIONS": ["_DIM_GLOBAL_WARNINGS"]})
 
         zarr_mcmc_point = state.create_group("mcmc_point", overwrite=True)
         for var_name, test_value in mcmc_point.items():

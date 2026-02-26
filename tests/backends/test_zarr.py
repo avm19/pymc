@@ -621,6 +621,21 @@ def test_sampling_consistency(
     xr.testing.assert_equal(parallel_idata.posterior, sequential_idata.posterior)
 
 
+@pytest.mark.parametrize("save_warmup", [True, False])
+def test_arviz_from_zarr(populated_trace, save_warmup):
+    from arviz.data.inference_data import WARMUP_TAG
+
+    trace, total_steps, tune, draws = populated_trace
+    zarr.consolidate_metadata(trace.root.store)
+    idata = trace.to_inferencedata(save_warmup=save_warmup)
+    idata_az = InferenceData.from_zarr(trace.root.store)
+    for name in idata_az:
+        # this exclusion logic is identical to what's in ZarrTrace.to_inferencedata()
+        if name.startswith("_") or (not save_warmup and name.startswith(WARMUP_TAG)):
+            idata_az.__delattr__(name)
+    assert idata_az == idata
+
+
 def test_from_store(populated_trace):
     trace, total_steps, tune, draws = populated_trace
     loaded_trace = ZarrTrace.from_store(
